@@ -16,7 +16,7 @@ arquivo_entrada = read.csv("cds2.csv", dec=".",header=F)
 arquivo_entrada = colsplit(arquivo_entrada$V1, split = "\\|", names = c("1")) #Dividindo a única coluna em várias colunas, usando o separador "|"
 arquivo_entrada = arquivo_entrada[,-4] #Colunas a serem tiradas podem ser modificadas de acordo com a formatação do arquivo (para deixar a coluna que tem o comando "start of data" que separa o começo de cada série, uma coluna de data e outra com o dado, nessa ordem)
 arquivo_entrada = t(arquivo_entrada) #Transpondo os arquivos, para facilitar a separação
-marcadores_start = which(arquivo_entrada[1,] %in% c("START SECURITY"))
+marcadores_start = which(arquivo_entrada[1,] %in% c("START OF DATA"))
 marcadores_end = which(arquivo_entrada[1,] %in% c("END SECURITY"))
 marcadores = marcadores_start #Definindo onde cada bloco de dados (série) será coletada
 marcadores[length(marcadores_start)+1] = marcadores_end[length(marcadores_end)] + 1
@@ -47,6 +47,26 @@ for (j in 1:length(marcadores)){''
     juntos = merge(juntos, base, by = "data", all = T)
   assign(nome_arquivo, base)
 }
+
+###Método 2
+#Importação e tratamento de arquivo
+arquivo_entrada = read.csv("cds2.csv", dec=".",header=F)
+arquivo_entrada = colsplit(arquivo_entrada$V1, split = "\\|", names = c("1")) #Dividindo a única coluna em várias colunas, usando o separador "|"
+marcadores_start = which(arquivo_entrada[,1] %in% c("START-OF-DATA")) + 1 
+marcadores_end = which(arquivo_entrada[,1] %in% c("END-OF-DATA")) - 1
+dados <- data.table(arquivo_entrada)
+dados <- dados[c(marcadores_start:marcadores_end),]
+dados <- dados[,c(-2,-3)]
+
+a = melt(dados, id.vars = "X1", measure.vars = "NA..3")
+a = a[,-2]
+b = melt(dados, id.vars = "X1", measure.vars = "NA..2")
+b= b[,-2]
+c = cbind(b, a)
+c = c[,-3]
+colnames(c) <- c("a", "b", "c")
+z = dcast(c, a~b)
+z = t(z)
 
 #Exportação de dados
 write.csv2(juntos, "Dados_RB.csv", row.names = F)
