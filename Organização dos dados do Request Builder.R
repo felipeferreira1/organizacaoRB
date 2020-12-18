@@ -60,6 +60,15 @@ if (decisor != 0){
   }
 }
 
+if (decisor != 0){
+  for(j in 2:dim(juntos)[2]){
+    juntos[,j] <- as.numeric(unlist(juntos[,j]))
+    print(j)
+    }
+  juntos[,1] <- as.Date(juntos[,1], "%d/%m/%y")
+  juntos <- arrange(juntos, data)
+}
+
 ### Método 2 ###
 #Onde as securities não estão separadas por "start security" e "end security", mas temos que usar "start of data" e "end of data" para separar a parte com os dados
 #Importação e tratamento de arquivo
@@ -83,11 +92,14 @@ if (decisor == 0){
   juntos = t(juntos)
   colnames(juntos) <- juntos[1,]
   juntos <- juntos[-c(1:2),]
+  juntos <- data.frame(data = row.names(juntos), juntos)
+  for(j in 2:dim(juntos)[2]){
+    juntos[,j] <- as.numeric(unlist(juntos[,j]))
+  }
+  juntos[,1] <- as.Date(juntos[,1], "%d/%m/%Y")
+  juntos <- arrange(juntos, data)
 }
 
 #Exportação de dados
-if (decisor != 0){
-  write.csv2(juntos, "Dados_RB.csv", row.names = F)}
-if (decisor == 0){
-  write.csv2(juntos, "Dados_RB.csv", row.names = T)}
+write.csv2(juntos, "Dados_RB.csv", row.names = F)
 
