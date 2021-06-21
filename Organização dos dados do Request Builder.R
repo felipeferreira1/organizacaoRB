@@ -5,13 +5,14 @@
 
 #Definindo diretórios a serem utilizados
 getwd()
-setwd("C:/Users/User/Documents")
+setwd("D:\\Documentos")
 
 #Carregando pacotes que serão utilizados
 library(readxl)
 library(reshape)
 library(data.table)
 library(stringr)
+library(dplyr)
 
 arquivo_entrada = read.csv("entrada.csv", dec=".",header=F)
 arquivo_entrada = colsplit(arquivo_entrada[,1], split = "\\|", names = c("1")) #Dividindo a única coluna em várias colunas, usando o separador "|"
